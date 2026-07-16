@@ -51,12 +51,50 @@ export async function POST(request: NextRequest) {
     )
   }
 
+function isValidImageMagicBytes(buffer: ArrayBuffer): boolean {
+  const bytes = new Uint8Array(buffer)
+  if (bytes.length < 12) return false
+  const isJpeg = bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff
+  const isPng =
+    bytes[0] === 0x89 &&
+    bytes[1] === 0x50 &&
+    bytes[2] === 0x4e &&
+    bytes[3] === 0x47 &&
+    bytes[4] === 0x0d &&
+    bytes[5] === 0x0a &&
+    bytes[6] === 0x1a &&
+    bytes[7] === 0x0a
+  const isWebp =
+    bytes[0] === 0x52 &&
+    bytes[1] === 0x49 &&
+    bytes[2] === 0x46 &&
+    bytes[3] === 0x46 &&
+    bytes[8] === 0x57 &&
+    bytes[9] === 0x45 &&
+    bytes[10] === 0x42 &&
+    bytes[11] === 0x50
+  return isJpeg || isPng || isWebp
+}
+
   const userId = session.user.id
   const ext = file.type.split('/')[1]
   // Store at {user_id}/avatar.{ext} — overwrites previous photo for this user
   const storagePath = `${userId}/avatar.${ext}`
 
   const arrayBuffer = await file.arrayBuffer()
+  if (!isValidImageMagicBytes(arrayBuffer)) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'File contents do not match a valid JPEG, PNG, or WebP image signature.',
+        },
+      },
+      { status: 400 },
+    )
+  }
+
   const { error: uploadError } = await adminClient.storage
     .from('profile-photos')
     .upload(storagePath, arrayBuffer, {

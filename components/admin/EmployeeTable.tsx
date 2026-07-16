@@ -28,6 +28,7 @@ interface Employee {
 
 async function fetchEmployees(): Promise<Employee[]> {
   const res = await fetch('/api/admin/employees')
+  if (!res.ok) throw new Error(`HTTP Error ${res.status}`)
   const json = await res.json()
   if (!json.success) throw new Error(json.error?.message ?? 'Failed to fetch employees')
   return json.data as Employee[]

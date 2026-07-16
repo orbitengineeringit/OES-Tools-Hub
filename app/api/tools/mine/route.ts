@@ -26,13 +26,13 @@ export async function GET() {
     )
   }
 
-  // Inner-join tools → tool_access on the current user's ID.
+  // Inner-join tools → tool_access on the current user's ID, pushing filter & sort to Postgres.
   // The admin client bypasses RLS, so tool_access is fully readable in this context.
   const { data: rows, error } = await adminClient
     .from('tool_access')
     .select(`
       tool_id,
-      tools (
+      tools!inner (
         id,
         title,
         description,
@@ -43,6 +43,8 @@ export async function GET() {
       )
     `)
     .eq('user_id', session.user.id)
+    .eq('tools.is_active', true)
+    .order('title', { foreignTable: 'tools', ascending: true })
 
   if (error) {
     console.error('[GET /api/tools/mine]', error)
@@ -52,12 +54,9 @@ export async function GET() {
     )
   }
 
-  // Supabase infers `row.tools` as an array when using nested select syntax.
-  // Since tool_id is a FK (one tool per grant row), we take the first element.
+  // Supabase infers `row.tools` as an object/array when using nested select syntax.
   const tools = (rows ?? [])
     .flatMap((row) => (Array.isArray(row.tools) ? row.tools : row.tools ? [row.tools] : []))
-    .filter((t) => t.is_active === true)
-    .sort((a, b) => String(a.title).localeCompare(String(b.title)))
 
   return NextResponse.json({ success: true, data: tools })
 }

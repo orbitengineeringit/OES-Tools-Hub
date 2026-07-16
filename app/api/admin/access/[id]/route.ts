@@ -59,12 +59,12 @@ export async function DELETE(_request: NextRequest, { params }: RouteContext) {
     ? (existing.employee[0]?.full_name ?? id)
     : ((existing.employee as { full_name: string | null } | null)?.full_name ?? id)
 
-  await writeAuditLog({
+  writeAuditLog({
     actor_id: session.user.id,
     action: 'access.revoked',
     target: `${empName} → ${toolTitle}`,
     meta: { grant_id: id },
-  })
+  }).catch((err) => console.error('[audit log error]', err))
 
   return NextResponse.json({ success: true, data: null })
 }

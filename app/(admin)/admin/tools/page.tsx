@@ -34,7 +34,19 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { ToolForm } from '@/components/forms/ToolForm'
+import dynamic from 'next/dynamic'
+
+const ToolForm = dynamic(
+  () => import('@/components/forms/ToolForm').then((mod) => mod.ToolForm),
+  {
+    loading: () => (
+      <div className="flex items-center justify-center p-8">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    ),
+    ssr: false,
+  },
+)
 
 // ────────────────────────────────────────────────────────────
 // API helpers
@@ -42,6 +54,7 @@ import { ToolForm } from '@/components/forms/ToolForm'
 
 async function fetchTools(): Promise<Tool[]> {
   const res = await fetch('/api/admin/tools')
+  if (!res.ok) throw new Error(`HTTP Error ${res.status}`)
   const json = await res.json()
   if (!json.success) throw new Error(json.error?.message ?? 'Failed to fetch tools')
   return json.data as Tool[]
@@ -53,6 +66,7 @@ async function createTool(values: ToolCreate): Promise<Tool> {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(values),
   })
+  if (!res.ok && res.status !== 400 && res.status !== 409) throw new Error(`HTTP Error ${res.status}`)
   const json = await res.json()
   if (!json.success) throw new Error(json.error?.message ?? 'Failed to create tool')
   return json.data as Tool
@@ -64,6 +78,7 @@ async function updateTool({ id, values }: { id: string; values: ToolCreate }): P
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(values),
   })
+  if (!res.ok && res.status !== 400) throw new Error(`HTTP Error ${res.status}`)
   const json = await res.json()
   if (!json.success) throw new Error(json.error?.message ?? 'Failed to update tool')
   return json.data as Tool
@@ -71,6 +86,7 @@ async function updateTool({ id, values }: { id: string; values: ToolCreate }): P
 
 async function apiDeleteTool(id: string): Promise<void> {
   const res = await fetch(`/api/admin/tools/${id}`, { method: 'DELETE' })
+  if (!res.ok) throw new Error(`HTTP Error ${res.status}`)
   const json = await res.json()
   if (!json.success) throw new Error(json.error?.message ?? 'Failed to delete tool')
 }
@@ -125,6 +141,14 @@ function ToolImageUpload({ toolId, onUploaded }: { toolId: string; onUploaded: (
       )}
     </label>
   )
+}
+
+function safeHostname(urlStr: string): string {
+  try {
+    return new URL(urlStr).hostname
+  } catch {
+    return urlStr
+  }
 }
 
 // ────────────────────────────────────────────────────────────
@@ -262,7 +286,7 @@ export default function AdminToolsPage() {
                       rel="noopener noreferrer"
                       className="text-xs text-muted-foreground hover:text-primary flex items-center gap-0.5 mt-0.5 w-fit"
                     >
-                      {new URL(tool.url).hostname}
+                      {safeHostname(tool.url)}
                       <ExternalLink className="h-3 w-3" />
                     </a>
                   </TableCell>

@@ -77,12 +77,12 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
     )
   }
 
-  await writeAuditLog({
+  writeAuditLog({
     actor_id: session.user.id,
     action: 'tool.updated',
     target: tool.title,
     meta: { tool_id: tool.id, changes: parsed.data },
-  })
+  }).catch((err) => console.error('[audit log error]', err))
 
   return NextResponse.json({ success: true, data: tool })
 }
@@ -105,23 +105,21 @@ export async function DELETE(_request: NextRequest, { params }: RouteContext) {
 
   const { id } = await params
 
-  // Read the tool title before deletion for the audit log
-  const { data: existing } = await adminClient
+  // Atomic single-query delete returning the deleted tool title for audit logging
+  const { data: deleted, error } = await adminClient
     .from('tools')
-    .select('id, title')
+    .delete()
     .eq('id', id)
+    .select('id, title')
     .single()
 
-  if (!existing) {
-    return NextResponse.json(
-      { success: false, error: { code: 'NOT_FOUND', message: 'Tool not found.' } },
-      { status: 404 },
-    )
-  }
-
-  const { error } = await adminClient.from('tools').delete().eq('id', id)
-
-  if (error) {
+  if (error || !deleted) {
+    if (error?.code === 'PGRST116') {
+      return NextResponse.json(
+        { success: false, error: { code: 'NOT_FOUND', message: 'Tool not found.' } },
+        { status: 404 },
+      )
+    }
     console.error('[DELETE /api/admin/tools/[id]]', error)
     return NextResponse.json(
       { success: false, error: { code: 'SERVER_ERROR', message: 'Failed to delete tool.' } },
@@ -129,12 +127,12 @@ export async function DELETE(_request: NextRequest, { params }: RouteContext) {
     )
   }
 
-  await writeAuditLog({
+  writeAuditLog({
     actor_id: session.user.id,
     action: 'tool.deleted',
-    target: existing.title,
-    meta: { tool_id: existing.id },
-  })
+    target: deleted.title,
+    meta: { tool_id: deleted.id },
+  }).catch((err) => console.error('[audit log error]', err))
 
   return NextResponse.json({ success: true, data: null })
 }

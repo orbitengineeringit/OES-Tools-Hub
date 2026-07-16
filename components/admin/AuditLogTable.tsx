@@ -32,6 +32,7 @@ interface AuditLogPage {
 
 async function fetchAuditLog(page: number, limit: number): Promise<AuditLogPage> {
   const res = await fetch(`/api/admin/audit-log?page=${page}&limit=${limit}`)
+  if (!res.ok) throw new Error(`HTTP Error ${res.status}`)
   const json = await res.json()
   if (!json.success) throw new Error(json.error?.message ?? 'Failed to fetch audit log')
   return json.data as AuditLogPage

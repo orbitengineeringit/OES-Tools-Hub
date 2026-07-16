@@ -47,6 +47,7 @@ interface Grant {
 
 async function fetchEmployees(): Promise<Employee[]> {
   const res = await fetch('/api/admin/employees')
+  if (!res.ok) throw new Error(`HTTP Error ${res.status}`)
   const json = await res.json()
   if (!json.success) throw new Error(json.error?.message ?? 'Failed to fetch employees')
   return json.data as Employee[]
@@ -54,6 +55,7 @@ async function fetchEmployees(): Promise<Employee[]> {
 
 async function fetchAllTools(): Promise<Tool[]> {
   const res = await fetch('/api/admin/tools')
+  if (!res.ok) throw new Error(`HTTP Error ${res.status}`)
   const json = await res.json()
   if (!json.success) throw new Error(json.error?.message ?? 'Failed to fetch tools')
   return json.data as Tool[]
@@ -61,6 +63,7 @@ async function fetchAllTools(): Promise<Tool[]> {
 
 async function fetchGrants(userId: string): Promise<Grant[]> {
   const res = await fetch(`/api/admin/access?user_id=${userId}`)
+  if (!res.ok) throw new Error(`HTTP Error ${res.status}`)
   const json = await res.json()
   if (!json.success) throw new Error(json.error?.message ?? 'Failed to fetch grants')
   return json.data as Grant[]
@@ -72,6 +75,7 @@ async function grantAccess(toolId: string, userId: string): Promise<Grant> {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ tool_id: toolId, user_id: userId }),
   })
+  if (!res.ok && res.status !== 409) throw new Error(`HTTP Error ${res.status}`)
   const json = await res.json()
   if (!json.success) throw new Error(json.error?.message ?? 'Failed to grant access')
   return json.data as Grant
@@ -79,6 +83,7 @@ async function grantAccess(toolId: string, userId: string): Promise<Grant> {
 
 async function revokeAccess(grantId: string): Promise<void> {
   const res = await fetch(`/api/admin/access/${grantId}`, { method: 'DELETE' })
+  if (!res.ok) throw new Error(`HTTP Error ${res.status}`)
   const json = await res.json()
   if (!json.success) throw new Error(json.error?.message ?? 'Failed to revoke access')
 }

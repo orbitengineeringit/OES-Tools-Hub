@@ -126,12 +126,12 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  await writeAuditLog({
+  writeAuditLog({
     actor_id: session.user.id,
     action: 'access.granted',
     target: `${employee.full_name ?? user_id} → ${tool.title}`,
     meta: { grant_id: grant.id, tool_id, user_id },
-  })
+  }).catch((err) => console.error('[audit log error]', err))
 
   return NextResponse.json({ success: true, data: grant }, { status: 201 })
 }

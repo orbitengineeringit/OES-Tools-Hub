@@ -90,12 +90,12 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  await writeAuditLog({
+  writeAuditLog({
     actor_id: session.user.id,
     action: 'tool.created',
     target: tool.title,
     meta: { tool_id: tool.id },
-  })
+  }).catch((err) => console.error('[audit log error]', err))
 
   return NextResponse.json({ success: true, data: tool }, { status: 201 })
 }

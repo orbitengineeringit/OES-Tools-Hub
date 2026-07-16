@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { redirect } from 'next/navigation'
 import { requireRole } from '@/lib/auth'
 import { Button } from '@/components/ui/button'
+import { SignOutButton } from '@/components/auth/SignOutButton'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 import { Wrench, Users, ShieldCheck, ScrollText } from 'lucide-react'
@@ -72,11 +73,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <AvatarImage src={profile.photo_url ?? undefined} alt={profile.full_name ?? 'Admin'} />
               <AvatarFallback className="text-xs font-medium">{initials}</AvatarFallback>
             </Avatar>
-            <form action="/api/auth/signout" method="POST">
-              <Button variant="ghost" size="sm" type="submit" className="text-muted-foreground hover:text-foreground">
-                Sign out
-              </Button>
-            </form>
+            <SignOutButton />
           </div>
         </div>
       </header>
