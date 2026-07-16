@@ -1,0 +1,25 @@
+# Company AI Tools Hub — Environment Variables
+# Copy this file to .env.local and fill in real values.
+# NEVER commit a file with real values. This file (.env.example) contains no secrets, only variable names.
+
+# --- Supabase (public, safe for browser) ---
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+
+# --- Supabase (server-only, NEVER expose to the client, NEVER prefix with NEXT_PUBLIC_) ---
+SUPABASE_SERVICE_ROLE_KEY=
+
+# --- App ---
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+
+# --- Optional, add when the corresponding feature is implemented (see TODO.md Phase 4/6) ---
+# SENTRY_DSN=
+# UPSTASH_REDIS_REST_URL=
+# UPSTASH_REDIS_REST_TOKEN=
+
+# Rule: if code references an env var not listed above, add it here first and note why in DECISIONS.md.
+
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
