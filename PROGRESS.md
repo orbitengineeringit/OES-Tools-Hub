@@ -20,9 +20,10 @@ _Ready for Vercel deployment via git push._
   - `vite.config.ts`, `index.html`, `src/vite-env.d.ts`, `vercel.json` — created Vite build and routing config
   - `src/App.tsx`, `src/main.tsx`, `src/context/AuthContext.tsx` — created client routing & state
   - `src/pages/*`, `src/layouts/*`, `src/components/*` — migrated pages, forms, cards, and UI components
+  - `middleware.ts`, `app/`, `components/`, `lib/` — deleted legacy Next.js middleware and server component files
 - Tests performed:
   - `npm run type-check` → ✅ PASS (0 TypeScript errors)
-  - `npm run build` → ✅ PASS (Vite production build succeeded in 9.07s)
+  - `npm run build` → ✅ PASS (Vite production build succeeded in 7.36s)
 - Result: PASS — Instant dev server startup (<200ms), instant HMR (<20ms), 0ms client routing transitions, ready for Vercel push.
 
 ### UI — Dashboard Tool Card "Orbital Nova" Ultimate Redesign (v2)
