@@ -41,7 +41,10 @@ export async function GET(request: NextRequest) {
     )
   }
 
-  return NextResponse.json({ success: true, data: grants ?? [] })
+  return NextResponse.json(
+    { success: true, data: grants ?? [] },
+    { headers: { 'Cache-Control': 'private, max-age=15, stale-while-revalidate=30' } }
+  )
 }
 
 

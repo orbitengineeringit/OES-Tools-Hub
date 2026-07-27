@@ -4,6 +4,22 @@ Architecture Decision Records. Every non-trivial technical choice gets an entry 
 
 ---
 
+## ADR-011: Dashboard Tool Card — Hero-Image Modern Redesign
+- **Context:** The original tool card was a compact icon-list card (~130px tall) with a small 40×40px thumbnail, plain text, and a shadcn Badge. It felt visually inconsistent with the premium split-screen auth pages (which use bold imagery, diagonal clip-paths, and Orbit brand gradients).
+- **Decision:** Redesigned `ToolCard.tsx` as a tall hero-image card (300px+ min-height):
+  1. **Image Hero (160px):** Full-bleed `next/image` at the top with a diagonal white clip overlay (`polygon(0 100%, 100% 40%, 100% 100%, 0% 100%)`) creating an angled image-to-body transition, matching the auth layout's signature diagonal style.
+  2. **Frosted glass category badge:** `backdrop-filter: blur(8px)`, `rgba(255,255,255,0.18)` bg, white border — overlaid on the image at top-left.
+  3. **No-image fallback:** Orbit navy→cyan diagonal gradient + oversized first-letter initial (text-white/20) — premium even without an image.
+  4. **Hover animation:** Framer Motion `scale(1.03)`, `y(-6px)`, Orbit cyan glow box-shadow (`rgba(29,180,210,0.28)`) + image zoom-in (scale 1.08) for a parallax feel.
+  5. **Launch button:** Full-width Orbit cyan pill button at card bottom; arrow nudges right on hover.
+  6. **Grid updated:** `lg:grid-cols-3` (down from 4) — taller cards require more horizontal space to display imagery properly.
+  7. **Header gradient:** Page title "My Tools" uses a `foreground→orbit-cyan` gradient text clip.
+- **Deviation from UI_GUIDELINES.md §4:** The spec called for 16:9 or 4:3 image ratio; the redesign uses a fixed 160px height. This was a deliberate upgrade for visual consistency — updated in UI_GUIDELINES.md §4.
+- **Why:** Provides visual parity with the premium auth pages, makes each tool feel like a distinct product card rather than a list item, and uses the full Orbit brand palette (cyan glow, navy→cyan gradient) established in the design system.
+- **Alternatives rejected:** Keeping the icon-list layout but adding color — rejected because the small thumbnail cannot showcase tool imagery meaningfully.
+
+---
+
 ## ADR-010: Multi-Layer Application Performance Optimization
 - **Context:** The application required a comprehensive performance optimization to achieve near-instant client responsiveness, immediate route switching, fast image asset delivery, reduced JS bundle sizes, and zero redundant DB lookups without modifying any UI, UX, business logic, auth, schema, APIs, or existing features.
 - **Decision:** Implemented a multi-tier optimization strategy across 5 layers:

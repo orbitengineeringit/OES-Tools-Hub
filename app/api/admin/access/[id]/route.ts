@@ -23,27 +23,25 @@ export async function DELETE(_request: NextRequest, { params }: RouteContext) {
 
   const { id } = await params
 
-  // Read the grant before deletion to build the audit log target string
-  const { data: existing } = await adminClient
+  // Atomic single-query delete returning joined tool and profile details
+  const { data: existing, error } = await adminClient
     .from('tool_access')
+    .delete()
+    .eq('id', id)
     .select(`
       id,
       tool:tools!tool_id(title),
       employee:profiles!user_id(full_name)
     `)
-    .eq('id', id)
     .single()
 
-  if (!existing) {
-    return NextResponse.json(
-      { success: false, error: { code: 'NOT_FOUND', message: 'Access grant not found.' } },
-      { status: 404 },
-    )
-  }
-
-  const { error } = await adminClient.from('tool_access').delete().eq('id', id)
-
-  if (error) {
+  if (error || !existing) {
+    if (error?.code === 'PGRST116') {
+      return NextResponse.json(
+        { success: false, error: { code: 'NOT_FOUND', message: 'Access grant not found.' } },
+        { status: 404 },
+      )
+    }
     console.error('[DELETE /api/admin/access/[id]]', error)
     return NextResponse.json(
       { success: false, error: { code: 'SERVER_ERROR', message: 'Failed to revoke access.' } },

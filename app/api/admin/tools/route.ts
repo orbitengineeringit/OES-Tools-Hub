@@ -33,7 +33,10 @@ export async function GET() {
     )
   }
 
-  return NextResponse.json({ success: true, data: tools })
+  return NextResponse.json(
+    { success: true, data: tools },
+    { headers: { 'Cache-Control': 'private, max-age=15, stale-while-revalidate=30' } }
+  )
 }
 
 // POST /api/admin/tools — create a new tool (admin only)

@@ -81,6 +81,16 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // Periodic cleanup — prevent unbounded Map growth
+  if (hitMap.size > 10000) {
+    const now = Date.now()
+    for (const [key, record] of hitMap) {
+      if (now - record.windowStart >= RATE_LIMIT_WINDOW_MS) {
+        hitMap.delete(key)
+      }
+    }
+  }
+
   // ── Supabase SSR session refresh ──────────────────────────
   // Check if any Supabase auth cookie exists before calling getUser().
   // If no auth cookie is present, skip the remote network call to fail fast & save ~150-300ms RTT.
@@ -124,6 +134,6 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     // Run on all routes except Next.js internals and static files
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|woff|woff2|ttf|ico|css|js|map)$).*)',
   ],
 }

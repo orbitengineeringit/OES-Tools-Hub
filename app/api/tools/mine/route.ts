@@ -58,5 +58,8 @@ export async function GET() {
   const tools = (rows ?? [])
     .flatMap((row) => (Array.isArray(row.tools) ? row.tools : row.tools ? [row.tools] : []))
 
-  return NextResponse.json({ success: true, data: tools })
+  return NextResponse.json(
+    { success: true, data: tools },
+    { headers: { 'Cache-Control': 'private, max-age=30, stale-while-revalidate=60' } }
+  )
 }

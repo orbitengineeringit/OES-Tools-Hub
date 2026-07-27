@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, memo } from 'react'
+import { useState, memo, useCallback, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { Loader2, ShieldCheck } from 'lucide-react'
@@ -190,7 +190,15 @@ export function AccessPanel() {
   const activeTools = allTools.filter((t) => t.is_active)
 
   // Build a quick lookup: tool_id → grant
-  const grantByToolId = new Map(grants.map((g) => [g.tool_id, g]))
+  const grantByToolId = useMemo(() => new Map(grants.map((g) => [g.tool_id, g])), [grants])
+
+  const handleGrant = useCallback((toolId: string, userId: string) => {
+    grantMutation.mutate({ toolId, userId })
+  }, [grantMutation])
+
+  const handleRevoke = useCallback((grantId: string) => {
+    revokeMutation.mutate(grantId)
+  }, [revokeMutation])
 
   return (
     <div className="space-y-6">
@@ -274,8 +282,8 @@ export function AccessPanel() {
                   tool={tool}
                   grant={grantByToolId.get(tool.id)}
                   userId={selectedUserId}
-                  onGrant={(toolId, userId) => grantMutation.mutate({ toolId, userId })}
-                  onRevoke={(grantId) => revokeMutation.mutate(grantId)}
+                  onGrant={handleGrant}
+                  onRevoke={handleRevoke}
                   disabled={isMutating}
                 />
               ))}

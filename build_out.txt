@@ -1,0 +1,21 @@
+   ▲ Next.js 15.5.20
+   - Environments: .env.local
+   - Experiments (use with caution):
+     · optimizePackageImports
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 6.7s
+   Linting and checking validity of types ...
+Failed to compile.
+
+./scripts/test-rls.ts:190:25
+Type error: Property 'code' does not exist on type 'never'.
+
+[0m [90m 188 |[39m   {
+ [90m 189 |[39m     [36mconst[39m { data[33m,[39m error } [33m=[39m [36mawait[39m clientA[33m.[39m[36mfrom[39m([32m'profiles'[39m)[33m.[39mselect([32m'id, full_name'[39m)[33m.[39meq([32m'id'[39m[33m,[39m userB[33m.[39mid)[33m.[39msingle()
+[31m[1m>[22m[39m[90m 190 |[39m     [36mif[39m ([33m![39mdata [33m||[39m error[33m?[39m[33m.[39mcode [33m===[39m [32m'PGRST116'[39m) pass([32m'User A CANNOT read User B profile (RLS row-level restriction enforced)'[39m)
+ [90m     |[39m                         [31m[1m^[22m[39m
+ [90m 191 |[39m     [36melse[39m fail([32m'User A CAN read User B profile — RLS BREACH'[39m[33m,[39m { data[33m,[39m error })
+ [90m 192 |[39m   }
+ [90m 193 |[39m[0m
+Next.js build worker exited with code: 1 and signal: null

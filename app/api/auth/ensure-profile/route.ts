@@ -27,19 +27,8 @@ export async function POST() {
   const userId = user.id
   const email = user.email ?? ''
 
-  // Check if profile already exists
-  const { data: existing } = await adminClient
-    .from('profiles')
-    .select('id')
-    .eq('id', userId)
-    .single()
-
-  if (existing) {
-    // Profile already exists — nothing to do
-    return NextResponse.json({ success: true, data: { created: false } })
-  }
-
   // Auto-create the profile row (role defaults to 'employee' per DATABASE.md)
+  // Handles duplicate key error (23505) gracefully if the profile already exists.
   const { error } = await adminClient.from('profiles').insert({
     id: userId,
     full_name: email.split('@')[0], // sensible default until the user fills in their name
@@ -48,7 +37,7 @@ export async function POST() {
   })
 
   if (error) {
-    // If a concurrent request already created it (race condition), that's fine — ignore the conflict
+    // If the profile already exists or a concurrent request created it, that's fine — ignore the conflict
     if (error.code === '23505') {
       return NextResponse.json({ success: true, data: { created: false } })
     }

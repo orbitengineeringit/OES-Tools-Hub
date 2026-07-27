@@ -12,7 +12,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'Company AI Tools Hub',
+  title: 'OES Tools Hub',
   description: 'Internal platform for discovering and accessing company tools — securely, in one place.',
 }
 

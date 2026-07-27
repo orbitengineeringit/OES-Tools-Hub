@@ -13,21 +13,7 @@ export async function GET() {
     )
   }
 
-  const { data: profile, error } = await adminClient
-    .from('profiles')
-    .select('id, full_name, photo_url, department, designation, bio, role, is_active, created_at')
-    .eq('id', session.user.id)
-    .single()
-
-  if (error || !profile) {
-    console.error('[GET /api/profile/me]', error)
-    return NextResponse.json(
-      { success: false, error: { code: 'NOT_FOUND', message: 'Profile not found.' } },
-      { status: 404 },
-    )
-  }
-
-  return NextResponse.json({ success: true, data: profile })
+  return NextResponse.json({ success: true, data: session.profile })
 }
 
 // PATCH /api/profile/me — update own profile fields (name, department, designation, bio)

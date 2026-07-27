@@ -2,7 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { redirect } from 'next/navigation'
 import { requireRole } from '@/lib/auth'
-import { Button } from '@/components/ui/button'
+import { buttonVariants } from '@/components/ui/button'
 import { SignOutButton } from '@/components/auth/SignOutButton'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
@@ -33,34 +33,27 @@ export default async function AdminLayout({ children }: { children: React.ReactN
                 width={28}
                 height={28}
                 className="object-contain"
+                priority
               />
-              <span className="hidden sm:inline text-sm">Orbit AI Tools Hub</span>
+              <span className="hidden sm:inline text-sm">OES Tools Hub</span>
             </Link>
             <Separator orientation="vertical" className="h-5" />
             <nav className="flex items-center gap-0.5">
-              <Link href="/admin/tools">
-                <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground">
-                  <Wrench className="h-4 w-4" />
-                  <span className="hidden sm:inline">Tools</span>
-                </Button>
+              <Link href="/admin/tools" className={buttonVariants({ variant: 'ghost', size: 'sm', className: 'gap-1.5 text-muted-foreground hover:text-foreground' })}>
+                <Wrench className="h-4 w-4" />
+                <span className="hidden sm:inline">Tools</span>
               </Link>
-              <Link href="/admin/employees">
-                <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground">
-                  <Users className="h-4 w-4" />
-                  <span className="hidden sm:inline">Employees</span>
-                </Button>
+              <Link href="/admin/employees" className={buttonVariants({ variant: 'ghost', size: 'sm', className: 'gap-1.5 text-muted-foreground hover:text-foreground' })}>
+                <Users className="h-4 w-4" />
+                <span className="hidden sm:inline">Employees</span>
               </Link>
-              <Link href="/admin/access">
-                <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground">
-                  <ShieldCheck className="h-4 w-4" />
-                  <span className="hidden sm:inline">Access</span>
-                </Button>
+              <Link href="/admin/access" className={buttonVariants({ variant: 'ghost', size: 'sm', className: 'gap-1.5 text-muted-foreground hover:text-foreground' })}>
+                <ShieldCheck className="h-4 w-4" />
+                <span className="hidden sm:inline">Access</span>
               </Link>
-              <Link href="/admin/audit-log">
-                <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground">
-                  <ScrollText className="h-4 w-4" />
-                  <span className="hidden sm:inline">Audit Log</span>
-                </Button>
+              <Link href="/admin/audit-log" className={buttonVariants({ variant: 'ghost', size: 'sm', className: 'gap-1.5 text-muted-foreground hover:text-foreground' })}>
+                <ScrollText className="h-4 w-4" />
+                <span className="hidden sm:inline">Audit Log</span>
               </Link>
             </nav>
           </div>

@@ -23,14 +23,18 @@
 
 ## 4. Tool Card Component Spec
 
-Every tool card has, in this exact visual order:
-1. Image (16:9 or 4:3, `object-cover`, rounded top corners, lazy-loaded)
-2. Category badge (small pill, top-left overlay on the image or just below it)
-3. Title (`text-lg font-semibold`, truncate at 2 lines max)
-4. Description (`text-sm text-gray-600`, truncate at 2–3 lines)
-5. "Launch" button (accent color, opens `url` in a new tab via `window.open(url, '_blank', 'noopener,noreferrer')`)
+Every tool card is a tall hero-image card (300px+ min-height) with this visual structure:
 
-Hover state: subtle lift (`translate-y-[-2px]`) + shadow increase, animated with Framer Motion (150–200ms ease-out) — not CSS-only, so it stays consistent with other motion in the app.
+1. **Image Hero** (160px fixed height, `object-cover`, full-bleed, `overflow-hidden`):
+   - Diagonal bottom clip overlay: `polygon(0 100%, 100% 40%, 100% 100%, 0% 100%)` — white wedge creates angled image→body transition matching the auth layout style
+   - **Frosted glass category badge** (absolute, top-3 left-3): `backdrop-filter: blur(8px)`, `rgba(255,255,255,0.18)` bg, white border, white text, `rounded-full`
+   - **No-image fallback:** Orbit navy→cyan diagonal gradient + oversized first letter of tool name (`opacity: 0.2`)
+2. **Card body** (below image): title (`text-base font-semibold`, `line-clamp-1`), description (`text-xs text-muted-foreground`, `line-clamp-2`)
+3. **Launch button** (full-width Orbit cyan pill, `h-9 rounded-full`): text "Launch →", arrow nudges right on hover
+
+**Grid:** `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3` — 3 columns max on desktop (taller cards need horizontal space to showcase imagery)
+
+**Hover state:** Framer Motion `scale(1.03)`, `y(-6px)`, Orbit cyan glow box-shadow (`0 20px 48px -8px rgba(29,180,210,0.28)`), image inside zooms to `scale(1.08)` for parallax feel. Transition: `200ms cubic-bezier(0.34, 1.56, 0.64, 1)` (slight spring).
 
 ## 5. Motion Guidelines
 

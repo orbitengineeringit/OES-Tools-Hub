@@ -1,26 +1,44 @@
 import { Skeleton } from '@/components/ui/skeleton'
 
-// Skeleton placeholder matching the exact dimensions and layout of ToolCard.
-// Shown in a grid during dashboard loading — never a bare spinner for list content (UI_GUIDELINES.md §9).
+// Skeleton matching new ToolCard: 220px hero + gradient border wrapper + 360px min-height.
+// Shown during dashboard loading — never a bare spinner (UI_GUIDELINES.md §9).
 export function ToolCardSkeleton() {
   return (
-    <div className="flex flex-col gap-3 bg-white rounded-xl border border-border p-4">
-      {/* Header row: thumbnail + external link icon */}
-      <div className="flex items-start justify-between gap-3">
-        <Skeleton className="h-10 w-10 rounded-lg shrink-0" />
-        <Skeleton className="h-4 w-4 rounded mt-0.5 shrink-0" />
-      </div>
+    // Gradient border wrapper — matches real card's visual frame
+    <div
+      style={{
+        borderRadius: '20px',
+        padding: '1px',
+        background:
+          'linear-gradient(135deg, rgba(29,180,210,0.2) 0%, rgba(11,61,110,0.1) 100%)',
+      }}
+    >
+      <div
+        style={{
+          borderRadius: '19px',
+          overflow: 'hidden',
+          background: 'white',
+          minHeight: '360px',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        {/* Hero image area */}
+        <Skeleton
+          className="w-full shrink-0"
+          style={{ height: '220px', borderRadius: 0 }}
+        />
 
-      {/* Title + description */}
-      <div className="space-y-2">
-        <Skeleton className="h-4 w-3/4 rounded" />
-        <Skeleton className="h-3 w-full rounded" />
-        <Skeleton className="h-3 w-5/6 rounded" />
-      </div>
-
-      {/* Category badge */}
-      <div className="mt-auto">
-        <Skeleton className="h-5 w-16 rounded-full" />
+        {/* Card body */}
+        <div className="flex flex-col flex-1 gap-3 px-4 pb-4 pt-2">
+          <div className="space-y-2 flex-1">
+            <Skeleton className="h-4 w-3/4 rounded" />
+            <Skeleton className="h-3 w-full rounded" />
+            <Skeleton className="h-3 w-5/6 rounded" />
+          </div>
+          {/* Launch button placeholder */}
+          <Skeleton className="mt-auto h-10 w-full rounded-full" />
+        </div>
       </div>
     </div>
   )

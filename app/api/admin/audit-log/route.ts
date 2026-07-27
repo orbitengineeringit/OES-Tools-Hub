@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     .select(
       `id, action, target, meta, created_at,
        actor:profiles!actor_id(id, full_name)`,
-      { count: 'exact' },
+      { count: 'planned' },
     )
     .order('created_at', { ascending: false })
     .range(offset, offset + limit - 1)
@@ -44,13 +44,16 @@ export async function GET(request: NextRequest) {
     )
   }
 
-  return NextResponse.json({
-    success: true,
-    data: {
-      items: items ?? [],
-      total: count ?? 0,
-      page,
-      limit,
+  return NextResponse.json(
+    {
+      success: true,
+      data: {
+        items: items ?? [],
+        total: count ?? 0,
+        page,
+        limit,
+      },
     },
-  })
+    { headers: { 'Cache-Control': 'private, max-age=10, stale-while-revalidate=20' } }
+  )
 }

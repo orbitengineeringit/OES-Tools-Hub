@@ -31,5 +31,8 @@ export async function GET() {
     )
   }
 
-  return NextResponse.json({ success: true, data: employees ?? [] })
+  return NextResponse.json(
+    { success: true, data: employees ?? [] },
+    { headers: { 'Cache-Control': 'private, max-age=30, stale-while-revalidate=60' } }
+  )
 }

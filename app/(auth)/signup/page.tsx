@@ -47,7 +47,7 @@ function SignupForm() {
 
   async function onSubmit(values: SignupValues) {
     if (!isEmailAllowed(values.email)) {
-      toast.error('This email address is not authorized for Orbit AI Tools Hub.')
+      toast.error('This email address is not authorized for OES Tools Hub.')
       return
     }
     setIsLoading(true)

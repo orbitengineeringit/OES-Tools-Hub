@@ -48,7 +48,7 @@ function LoginForm() {
     if (error === 'oauth') {
       toast.error('Google sign-in failed. Please try again.')
     } else if (error === 'unauthorized') {
-      toast.error('This email is not authorized to access Orbit AI Tools Hub.')
+      toast.error('This email is not authorized to access OES Tools Hub.')
     }
   }, [searchParams])
 

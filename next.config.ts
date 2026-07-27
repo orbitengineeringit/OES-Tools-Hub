@@ -16,6 +16,10 @@ const nextConfig: NextConfig = {
 
   // Package import optimization for tree-shaking icons & animation libraries
   experimental: {
+    staleTimes: {
+      dynamic: 30,
+      static: 180,
+    },
     optimizePackageImports: [
       'lucide-react',
       'framer-motion',

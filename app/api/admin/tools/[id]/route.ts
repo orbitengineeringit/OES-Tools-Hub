@@ -48,20 +48,6 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
     )
   }
 
-  // Confirm the tool exists before updating
-  const { data: existing } = await adminClient
-    .from('tools')
-    .select('id, title')
-    .eq('id', id)
-    .single()
-
-  if (!existing) {
-    return NextResponse.json(
-      { success: false, error: { code: 'NOT_FOUND', message: 'Tool not found.' } },
-      { status: 404 },
-    )
-  }
-
   const { data: tool, error } = await adminClient
     .from('tools')
     .update(parsed.data)
@@ -70,6 +56,12 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
     .single()
 
   if (error || !tool) {
+    if (error?.code === 'PGRST116') {
+      return NextResponse.json(
+        { success: false, error: { code: 'NOT_FOUND', message: 'Tool not found.' } },
+        { status: 404 },
+      )
+    }
     console.error('[PATCH /api/admin/tools/[id]]', error)
     return NextResponse.json(
       { success: false, error: { code: 'SERVER_ERROR', message: 'Failed to update tool.' } },
