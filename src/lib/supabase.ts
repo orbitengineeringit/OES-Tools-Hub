@@ -1,16 +1,20 @@
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 
 const supabaseUrl =
-  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_SUPABASE_URL) ||
-  (typeof import.meta !== 'undefined' && import.meta.env?.NEXT_PUBLIC_SUPABASE_URL) ||
-  (typeof process !== 'undefined' && (process.env as Record<string, string | undefined>)?.NEXT_PUBLIC_SUPABASE_URL) ||
-  ''
+  import.meta.env.VITE_SUPABASE_URL ||
+  import.meta.env.NEXT_PUBLIC_SUPABASE_URL ||
+  'https://placeholder-project.supabase.co'
 
 const supabaseAnonKey =
-  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_SUPABASE_ANON_KEY) ||
-  (typeof import.meta !== 'undefined' && import.meta.env?.NEXT_PUBLIC_SUPABASE_ANON_KEY) ||
-  (typeof process !== 'undefined' && (process.env as Record<string, string | undefined>)?.NEXT_PUBLIC_SUPABASE_ANON_KEY) ||
-  ''
+  import.meta.env.VITE_SUPABASE_ANON_KEY ||
+  import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  'placeholder-anon-key'
+
+if (!import.meta.env.VITE_SUPABASE_URL && !import.meta.env.NEXT_PUBLIC_SUPABASE_URL) {
+  console.warn(
+    '⚠️ Supabase URL is missing from environment variables. Please configure VITE_SUPABASE_URL (or NEXT_PUBLIC_SUPABASE_URL) in Vercel settings.'
+  )
+}
 
 export const supabase = createSupabaseClient(supabaseUrl, supabaseAnonKey)
 

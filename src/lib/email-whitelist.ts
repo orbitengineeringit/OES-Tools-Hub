@@ -9,9 +9,8 @@ export function isEmailAllowed(email: string): boolean {
   const cleanEmail = email.trim().toLowerCase()
 
   const allowedEmailsStr =
-    (typeof import.meta !== 'undefined' && import.meta.env?.VITE_ALLOWED_EMAILS) ||
-    (typeof import.meta !== 'undefined' && import.meta.env?.NEXT_PUBLIC_ALLOWED_EMAILS) ||
-    (typeof process !== 'undefined' && (process.env as Record<string, string | undefined>)?.NEXT_PUBLIC_ALLOWED_EMAILS) ||
+    import.meta.env.VITE_ALLOWED_EMAILS ||
+    import.meta.env.NEXT_PUBLIC_ALLOWED_EMAILS ||
     ''
 
   const allowedEmails = allowedEmailsStr
@@ -24,9 +23,8 @@ export function isEmailAllowed(email: string): boolean {
   }
 
   const allowedDomainsStr =
-    (typeof import.meta !== 'undefined' && import.meta.env?.VITE_ALLOWED_DOMAINS) ||
-    (typeof import.meta !== 'undefined' && import.meta.env?.NEXT_PUBLIC_ALLOWED_DOMAINS) ||
-    (typeof process !== 'undefined' && (process.env as Record<string, string | undefined>)?.NEXT_PUBLIC_ALLOWED_DOMAINS) ||
+    import.meta.env.VITE_ALLOWED_DOMAINS ||
+    import.meta.env.NEXT_PUBLIC_ALLOWED_DOMAINS ||
     ''
 
   const allowedDomains = allowedDomainsStr
