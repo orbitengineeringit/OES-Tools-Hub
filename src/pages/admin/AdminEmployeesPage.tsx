@@ -48,7 +48,7 @@ export function AdminEmployeesPage() {
         </p>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-xs">
+      <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
         {isLoading ? (
           <Table>
             <TableHeader>

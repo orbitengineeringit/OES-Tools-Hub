@@ -92,13 +92,7 @@ export function DashboardPage() {
           ))}
         </div>
       ) : tools.length === 0 ? (
-        <div
-          className="flex flex-col items-center justify-center h-64 rounded-3xl p-8 text-center"
-          style={{
-            background: 'rgba(29,180,210,0.03)',
-            border: '1px dashed rgba(29,180,210,0.25)',
-          }}
-        >
+        <div className="flex flex-col items-center justify-center h-64 bg-white border border-slate-200 shadow-sm rounded-2xl p-8 text-center">
           <div
             className="p-4 rounded-2xl mb-3"
             style={{

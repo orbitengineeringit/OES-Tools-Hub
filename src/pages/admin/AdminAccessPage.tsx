@@ -81,9 +81,8 @@ async function grantAccess(toolId: string, userId: string): Promise<void> {
     await supabase.from('audit_logs').insert({
       actor_id: session.user.id,
       action: 'grant_access',
-      target_type: 'tool_access',
-      target_id: toolId,
-      details: { tool_id: toolId, target_user_id: userId },
+      target: `tool:${toolId}`,
+      meta: { tool_id: toolId, target_user_id: userId },
     })
   }
 }
@@ -101,9 +100,8 @@ async function revokeAccess(grantId: string): Promise<void> {
     await supabase.from('audit_logs').insert({
       actor_id: session.user.id,
       action: 'revoke_access',
-      target_type: 'tool_access',
-      target_id: grantId,
-      details: { grant_id: grantId },
+      target: `tool_access:${grantId}`,
+      meta: { grant_id: grantId },
     })
   }
 }
@@ -168,7 +166,7 @@ export function AdminAccessPage() {
         </p>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 p-4 space-y-3 shadow-xs">
+      <div className="bg-white rounded-2xl border border-slate-200 p-4 space-y-3 shadow-sm">
         <p className="text-sm font-semibold text-slate-900">Select an employee</p>
         {loadingEmployees ? (
           <div className="flex items-center gap-2 text-slate-500 text-sm">
@@ -199,7 +197,7 @@ export function AdminAccessPage() {
       </div>
 
       {selectedUserId && (
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-xs">
+        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
           <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-200 bg-slate-50">
             {selectedEmployee && (
               <>
@@ -271,7 +269,7 @@ export function AdminAccessPage() {
       )}
 
       {!selectedUserId && !loadingEmployees && (
-        <div className="flex flex-col items-center justify-center h-40 border border-dashed border-slate-300 rounded-xl bg-white gap-2 shadow-xs">
+        <div className="flex flex-col items-center justify-center h-40 border border-slate-200 rounded-2xl bg-white gap-2 shadow-sm">
           <ShieldCheck className="h-8 w-8 text-slate-400" />
           <p className="text-sm text-slate-500">Select an employee to manage their tool access.</p>
         </div>

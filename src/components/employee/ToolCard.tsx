@@ -69,81 +69,44 @@ export const ToolCard = memo(function ToolCard({
   const firstLetter = title[0]?.toUpperCase() ?? '?'
 
   return (
-    <div style={{ borderRadius: '20px', padding: '1px', position: 'relative' }}>
-      {/* Resting border */}
+    <motion.a
+      ref={cardRef}
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`Open ${title}`}
+      onHoverStart={() => !shouldReduceMotion && setIsHovered(true)}
+      onHoverEnd={handleHoverEnd}
+      onMouseMove={handleMouseMove}
+      whileHover={
+        shouldReduceMotion
+          ? {}
+          : {
+              y: -8,
+              scale: 1.02,
+              boxShadow:
+                '0 20px 40px -8px rgba(0,0,0,0.1), 0 8px 16px -4px rgba(29,180,210,0.12)',
+            }
+      }
+      transition={CARD_SPRING}
+      style={{
+        rotateX: shouldReduceMotion ? 0 : rotateX,
+        rotateY: shouldReduceMotion ? 0 : rotateY,
+        transformStyle: 'preserve-3d',
+        perspective: 1000,
+        willChange: 'transform',
+      }}
+      className="group flex flex-col relative overflow-hidden bg-white border border-slate-200 rounded-2xl shadow-sm cursor-pointer min-h-[360px]"
+    >
       <div
         aria-hidden="true"
+        className="absolute inset-x-0 top-0 z-30 pointer-events-none"
         style={{
-          position: 'absolute',
-          inset: 0,
-          borderRadius: '20px',
-          pointerEvents: 'none',
+          height: '80px',
           background:
-            'linear-gradient(135deg, rgba(29,180,210,0.3) 0%, rgba(11,61,110,0.15) 100%)',
+            'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 100%)',
         }}
       />
-      {/* Hover border */}
-      <div
-        aria-hidden="true"
-        style={{
-          position: 'absolute',
-          inset: 0,
-          borderRadius: '20px',
-          pointerEvents: 'none',
-          background:
-            'linear-gradient(135deg, rgba(29,180,210,0.75) 0%, rgba(11,61,110,0.45) 100%)',
-          opacity: isHovered ? 1 : 0,
-          transition: 'opacity 0.3s ease',
-        }}
-      />
-
-      <motion.a
-        ref={cardRef}
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label={`Open ${title}`}
-        onHoverStart={() => !shouldReduceMotion && setIsHovered(true)}
-        onHoverEnd={handleHoverEnd}
-        onMouseMove={handleMouseMove}
-        whileHover={
-          shouldReduceMotion
-            ? {}
-            : {
-                y: -8,
-                scale: 1.025,
-                boxShadow:
-                  '0 24px 60px -8px rgba(29,180,210,0.38), 0 8px 24px -4px rgba(11,61,110,0.12)',
-              }
-        }
-        transition={CARD_SPRING}
-        style={{
-          rotateX: shouldReduceMotion ? 0 : rotateX,
-          rotateY: shouldReduceMotion ? 0 : rotateY,
-          transformStyle: 'preserve-3d',
-          perspective: 1000,
-          willChange: 'transform',
-          minHeight: '360px',
-          borderRadius: '19px',
-          overflow: 'hidden',
-          display: 'flex',
-          flexDirection: 'column',
-          background: 'white',
-          cursor: 'pointer',
-          position: 'relative',
-          boxShadow: '0 4px 16px -4px rgba(0,0,0,0.07)',
-        }}
-        className="group block"
-      >
-        <div
-          aria-hidden="true"
-          className="absolute inset-x-0 top-0 z-30 pointer-events-none"
-          style={{
-            height: '80px',
-            background:
-              'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 100%)',
-          }}
-        />
 
         <motion.div
           aria-hidden="true"
@@ -305,6 +268,5 @@ export const ToolCard = memo(function ToolCard({
           </div>
         </div>
       </motion.a>
-    </div>
   )
 })

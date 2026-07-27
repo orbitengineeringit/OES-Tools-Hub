@@ -2,6 +2,16 @@
 
 Architecture Decision Records. Every non-trivial technical choice gets an entry here so it isn't silently reversed or re-debated later. Newest on top.
 
+## ADR-013: Postgres RLS Policies for Vite SPA & White-Theme Card UI Polish
+- **Context:** Following the migration from Next.js server Route Handlers to Vite SPA, direct Supabase browser queries with the `anon` key encountered Postgres RLS access denials on `tool_access`, `tools`, `profiles`, and `audit_logs`. Additionally, auth route switching needed instant 0ms response, and the inside pages required a clean white-theme card-based UI.
+- **Decision:**
+  1. Created migration `003_admin_and_access_rls.sql` with `public.is_admin()` SQL security definer helper to evaluate admin role without RLS recursion.
+  2. Defined explicit RLS policies granting admins full CRUD on tools/grants/audit logs, while granting employees read access to assigned tools & own profile.
+  3. Preloaded auth page routes in `App.tsx` for 0ms instant route switching between Sign In, Sign Up, and Forgot Password, preserving 100% of their existing UI design.
+  4. Redesigned Employee Dashboard and Admin pages into an ultra-clean white-theme card system (`bg-white`, `border-slate-200`, `shadow-xs`/`shadow-sm`, rounded-2xl).
+- **Why:** Restores full admin tool assignment and audit logging natively in Postgres without needing intermediate Node server endpoints, delivers instant auth navigation speed, and provides a polished white-theme card aesthetic.
+- **Alternatives rejected:** Restoring Next.js server routes (rejected because user requested Vite SPA for maximum performance).
+
 ---
 
 ## ADR-012: Migration from Next.js 15 to React 19 + Vite + React Router v7

@@ -5,11 +5,11 @@ import { SplitAuthLayout } from '@/components/auth/SplitAuthLayout'
 import { EmployeeLayout } from '@/layouts/EmployeeLayout'
 import { AdminLayout } from '@/layouts/AdminLayout'
 
-// Lazy-loaded routes for code splitting
-const LoginPage = lazy(() => import('@/pages/auth/LoginPage').then(m => ({ default: m.LoginPage })))
-const SignupPage = lazy(() => import('@/pages/auth/SignupPage').then(m => ({ default: m.SignupPage })))
-const ForgotPasswordPage = lazy(() => import('@/pages/auth/ForgotPasswordPage').then(m => ({ default: m.ForgotPasswordPage })))
-const AuthCallbackPage = lazy(() => import('@/pages/auth/AuthCallbackPage').then(m => ({ default: m.AuthCallbackPage })))
+// Statically imported auth routes for instant navigation
+import { LoginPage } from '@/pages/auth/LoginPage'
+import { SignupPage } from '@/pages/auth/SignupPage'
+import { ForgotPasswordPage } from '@/pages/auth/ForgotPasswordPage'
+import { AuthCallbackPage } from '@/pages/auth/AuthCallbackPage'
 
 const DashboardPage = lazy(() => import('@/pages/employee/DashboardPage').then(m => ({ default: m.DashboardPage })))
 const ProfilePage = lazy(() => import('@/pages/employee/ProfilePage').then(m => ({ default: m.ProfilePage })))

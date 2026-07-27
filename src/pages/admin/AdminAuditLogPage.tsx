@@ -16,9 +16,8 @@ import {
 interface AuditLogEntry {
   id: string
   action: string
-  target_id: string | null
-  target_type: string | null
-  details: Record<string, unknown> | null
+  target: string | null
+  meta: Record<string, unknown> | null
   created_at: string
   actor_id: string
   actor_name?: string
@@ -98,7 +97,7 @@ export function AdminAuditLogPage() {
         </p>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-xs">
+      <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
         {isLoading ? (
           <div className="flex items-center justify-center h-40">
             <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
@@ -114,7 +113,7 @@ export function AdminAuditLogPage() {
                 <TableHead>When</TableHead>
                 <TableHead>Actor</TableHead>
                 <TableHead>Action</TableHead>
-                <TableHead>Target Type</TableHead>
+                <TableHead>Target</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -132,7 +131,7 @@ export function AdminAuditLogPage() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-sm text-slate-600">
-                    {entry.target_type ?? '—'}
+                    {entry.target ?? '—'}
                   </TableCell>
                 </TableRow>
               ))}

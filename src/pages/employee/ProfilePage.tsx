@@ -53,7 +53,6 @@ export function ProfilePage() {
           full_name: values.full_name,
           department: values.department || null,
           designation: values.designation || null,
-          updated_at: new Date().toISOString(),
         })
         .eq('id', user.id)
 
@@ -98,7 +97,7 @@ export function ProfilePage() {
 
       const { error: updateErr } = await supabase
         .from('profiles')
-        .update({ photo_url: publicUrl, updated_at: new Date().toISOString() })
+        .update({ photo_url: publicUrl })
         .eq('id', user.id)
 
       if (updateErr) throw new Error(updateErr.message)

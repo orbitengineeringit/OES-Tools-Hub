@@ -26,6 +26,15 @@ _(No open critical or high security issues remaining. All 10 RLS policies verifi
 
 ## Resolved Issues
 
+### Issue: Vite SPA Admin Tool Assignment RLS & Audit Log Schema Mismatch
+- **Severity:** high
+- **Discovered:** 2026-07-28
+- **Resolved:** 2026-07-28
+- **Affected area:** `tool_access`, `tools`, `profiles`, `audit_logs`
+- **Description:** After migrating from Next.js server route handlers to Vite SPA, client calls hit Supabase with the `anon` key, encountering Postgres RLS policy blocks when granting/revoking tools or inserting audit logs with non-existent columns (`target_type`, `details`).
+- **Fix:** Created `003_admin_and_access_rls.sql` migration with `is_admin()` SQL security definer helper and full RLS policies for `admin` and `employee` roles. Updated `AdminAccessPage.tsx` and `AdminAuditLogPage.tsx` to use schema columns `target` and `meta`. Added `updated_at` to `profiles`.
+- **Result:** **RESOLVED** — Admin tool assignment, employee dashboard access, tool management, and audit logging function cleanly under RLS. Type check and Vite build pass with zero errors.
+
 ### Issue: RLS cross-user isolation verification suite
 - **Severity:** high
 - **Discovered:** 2026-07-15
