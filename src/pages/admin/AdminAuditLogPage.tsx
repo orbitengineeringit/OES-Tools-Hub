@@ -92,25 +92,25 @@ export function AdminAuditLogPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-100">Audit Log</h1>
-        <p className="text-slate-400 text-sm mt-0.5">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Audit Log</h1>
+        <p className="text-slate-500 text-sm mt-0.5">
           Read-only history of administrative actions.
         </p>
       </div>
 
-      <div className="bg-slate-900/80 rounded-xl border border-slate-800 overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-xs">
         {isLoading ? (
           <div className="flex items-center justify-center h-40">
             <Loader2 className="h-6 w-6 animate-spin text-slate-400" />
           </div>
         ) : (data?.items ?? []).length === 0 ? (
           <div className="flex items-center justify-center h-40">
-            <p className="text-slate-400 text-sm">No audit entries yet.</p>
+            <p className="text-slate-500 text-sm">No audit entries yet.</p>
           </div>
         ) : (
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="bg-slate-50">
                 <TableHead>When</TableHead>
                 <TableHead>Actor</TableHead>
                 <TableHead>Action</TableHead>
@@ -120,18 +120,18 @@ export function AdminAuditLogPage() {
             <TableBody>
               {(data?.items ?? []).map((entry) => (
                 <TableRow key={entry.id}>
-                  <TableCell className="text-xs text-slate-400 whitespace-nowrap">
+                  <TableCell className="text-xs text-slate-500 whitespace-nowrap">
                     {formatDate(entry.created_at)}
                   </TableCell>
-                  <TableCell className="text-sm text-slate-200">
-                    {entry.actor_name ?? <span className="text-slate-500">Admin</span>}
+                  <TableCell className="text-sm font-medium text-slate-900">
+                    {entry.actor_name ?? <span className="text-slate-400">Admin</span>}
                   </TableCell>
                   <TableCell>
                     <Badge variant={ACTION_COLORS[entry.action] ?? 'secondary'}>
                       {entry.action}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-sm text-slate-400">
+                  <TableCell className="text-sm text-slate-600">
                     {entry.target_type ?? '—'}
                   </TableCell>
                 </TableRow>
@@ -142,7 +142,7 @@ export function AdminAuditLogPage() {
       </div>
 
       {data && totalPages > 1 && (
-        <div className="flex items-center justify-between text-sm text-slate-400">
+        <div className="flex items-center justify-between text-sm text-slate-500">
           <span>
             Showing {((page - 1) * PAGE_SIZE) + 1}–{Math.min(page * PAGE_SIZE, data.total)} of {data.total}
           </span>
@@ -152,7 +152,7 @@ export function AdminAuditLogPage() {
               size="icon-sm"
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="border-slate-800 text-slate-300"
+              className="border-slate-300 text-slate-700"
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -162,7 +162,7 @@ export function AdminAuditLogPage() {
               size="icon-sm"
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
-              className="border-slate-800 text-slate-300"
+              className="border-slate-300 text-slate-700"
             >
               <ChevronRight className="h-4 w-4" />
             </Button>

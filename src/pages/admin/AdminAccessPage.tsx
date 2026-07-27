@@ -77,7 +77,6 @@ async function grantAccess(toolId: string, userId: string): Promise<void> {
 
   if (error) throw new Error(error.message)
 
-  // Audit log entry
   if (session?.user.id) {
     await supabase.from('audit_logs').insert({
       actor_id: session.user.id,
@@ -163,21 +162,21 @@ export function AdminAccessPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-100">Access Management</h1>
-        <p className="text-slate-400 text-sm mt-0.5">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Access Management</h1>
+        <p className="text-slate-500 text-sm mt-0.5">
           Grant or revoke tool access for individual employees.
         </p>
       </div>
 
-      <div className="bg-slate-900/80 rounded-xl border border-slate-800 p-4 space-y-3">
-        <p className="text-sm font-medium text-slate-200">Select an employee</p>
+      <div className="bg-white rounded-xl border border-slate-200 p-4 space-y-3 shadow-xs">
+        <p className="text-sm font-semibold text-slate-900">Select an employee</p>
         {loadingEmployees ? (
-          <div className="flex items-center gap-2 text-slate-400 text-sm">
+          <div className="flex items-center gap-2 text-slate-500 text-sm">
             <Loader2 className="h-4 w-4 animate-spin" /> Loading employees…
           </div>
         ) : (
           <Select value={selectedUserId} onValueChange={(val) => setSelectedUserId(val ?? '')}>
-            <SelectTrigger className="w-full sm:w-72 bg-slate-950/60 border-slate-800">
+            <SelectTrigger className="w-full sm:w-72 bg-white border-slate-300 text-slate-900">
               {selectedUserId && selectedEmployee ? (
                 <span className="truncate">
                   {selectedEmployee.full_name ?? selectedEmployee.id}
@@ -187,7 +186,7 @@ export function AdminAccessPage() {
                 <SelectValue placeholder="Choose employee…" />
               )}
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white text-slate-900 border-slate-200">
               {employees.map((emp) => (
                 <SelectItem key={emp.id} value={emp.id}>
                   {emp.full_name ?? emp.id}
@@ -200,23 +199,23 @@ export function AdminAccessPage() {
       </div>
 
       {selectedUserId && (
-        <div className="bg-slate-900/80 rounded-xl border border-slate-800 overflow-hidden">
-          <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-800 bg-slate-950/50">
+        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-xs">
+          <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-200 bg-slate-50">
             {selectedEmployee && (
               <>
                 <Avatar className="h-7 w-7">
                   <AvatarImage src={selectedEmployee.photo_url ?? undefined} alt={selectedEmployee.full_name ?? 'Employee'} />
-                  <AvatarFallback className="text-xs font-bold text-white bg-slate-800">
+                  <AvatarFallback className="text-xs font-bold text-white bg-[#0B3D6E]">
                     {(selectedEmployee.full_name ?? '?')[0]?.toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                <span className="text-sm font-semibold text-slate-100">{selectedEmployee.full_name ?? '—'}</span>
-                <span className="text-xs text-slate-400">
+                <span className="text-sm font-semibold text-slate-900">{selectedEmployee.full_name ?? '—'}</span>
+                <span className="text-xs text-slate-500">
                   — {grants.length} of {activeTools.length} tools granted
                 </span>
               </>
             )}
-            {isMutating && <Loader2 className="h-4 w-4 animate-spin text-cyan-400 ml-auto" />}
+            {isMutating && <Loader2 className="h-4 w-4 animate-spin text-[#1DB4D2] ml-auto" />}
           </div>
 
           {loadingGrants || loadingTools ? (
@@ -225,7 +224,7 @@ export function AdminAccessPage() {
             </div>
           ) : activeTools.length === 0 ? (
             <div className="flex items-center justify-center h-32">
-              <p className="text-sm text-slate-400">No active tools to assign.</p>
+              <p className="text-sm text-slate-500">No active tools to assign.</p>
             </div>
           ) : (
             <div className="py-2">
@@ -237,7 +236,7 @@ export function AdminAccessPage() {
                   <label
                     key={tool.id}
                     className={`flex items-center gap-3 px-4 py-3 cursor-pointer select-none transition-colors ${
-                      checked ? 'bg-cyan-500/10' : 'hover:bg-slate-800/40'
+                      checked ? 'bg-[#1DB4D2]/10' : 'hover:bg-slate-50'
                     } ${isMutating ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
                     <input
@@ -252,17 +251,17 @@ export function AdminAccessPage() {
                           handleGrant(tool.id, selectedUserId)
                         }
                       }}
-                      className="h-4 w-4 rounded accent-cyan-500 cursor-pointer"
+                      className="h-4 w-4 rounded accent-[#1DB4D2] cursor-pointer"
                     />
                     <div className="flex-1 min-w-0">
-                      <span className="text-sm font-medium text-slate-100">{tool.title}</span>
+                      <span className="text-sm font-medium text-slate-900">{tool.title}</span>
                       {tool.category && (
-                        <Badge variant="outline" className="ml-2 text-xs border-slate-700 text-slate-300">
+                        <Badge variant="outline" className="ml-2 text-xs border-slate-200 text-slate-700 bg-slate-100">
                           {tool.category}
                         </Badge>
                       )}
                     </div>
-                    {checked && <ShieldCheck className="h-4 w-4 text-cyan-400 shrink-0" />}
+                    {checked && <ShieldCheck className="h-4 w-4 text-[#1DB4D2] shrink-0" />}
                   </label>
                 )
               })}
@@ -272,9 +271,9 @@ export function AdminAccessPage() {
       )}
 
       {!selectedUserId && !loadingEmployees && (
-        <div className="flex flex-col items-center justify-center h-40 border border-dashed border-slate-800 rounded-xl bg-slate-900/40 gap-2">
-          <ShieldCheck className="h-8 w-8 text-slate-600" />
-          <p className="text-sm text-slate-400">Select an employee to manage their tool access.</p>
+        <div className="flex flex-col items-center justify-center h-40 border border-dashed border-slate-300 rounded-xl bg-white gap-2 shadow-xs">
+          <ShieldCheck className="h-8 w-8 text-slate-400" />
+          <p className="text-sm text-slate-500">Select an employee to manage their tool access.</p>
         </div>
       )}
     </div>

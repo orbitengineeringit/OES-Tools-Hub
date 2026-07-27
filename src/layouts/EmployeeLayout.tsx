@@ -14,8 +14,8 @@ export function EmployeeLayout({ children }: EmployeeLayoutProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0b0f19] flex items-center justify-center">
-        <div className="animate-spin h-8 w-8 border-4 border-cyan-500 border-t-transparent rounded-full" />
+      <div className="min-h-screen bg-[#fafafa] flex items-center justify-center">
+        <div className="animate-spin h-8 w-8 border-4 border-[#1DB4D2] border-t-transparent rounded-full" />
       </div>
     )
   }
@@ -32,30 +32,44 @@ export function EmployeeLayout({ children }: EmployeeLayoutProps) {
     .slice(0, 2)
 
   return (
-    <div className="min-h-screen bg-[#0b0f19] text-slate-100 relative overflow-x-hidden">
-      {/* Aurora blobs */}
-      <div aria-hidden="true" className="pointer-events-none fixed inset-0 overflow-hidden z-0">
+    <div className="min-h-screen bg-[#fafafa] relative overflow-x-hidden text-slate-900">
+      {/* Aurora blobs — atmospheric depth (Light theme) */}
+      <div aria-hidden="true" className="pointer-events-none fixed inset-0 overflow-hidden" style={{ zIndex: 0 }}>
+        {/* Cyan bloom — top left */}
         <div
           style={{
             position: 'absolute', top: '-20%', left: '-15%',
             width: '700px', height: '700px', borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(29,180,210,0.12) 0%, transparent 68%)',
+            background: 'radial-gradient(circle, rgba(29,180,210,0.09) 0%, transparent 68%)',
           }}
         />
+        {/* Navy bloom — bottom right */}
         <div
           style={{
             position: 'absolute', bottom: '-20%', right: '-15%',
             width: '600px', height: '600px', borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(11,61,110,0.15) 0%, transparent 68%)',
+            background: 'radial-gradient(circle, rgba(11,61,110,0.06) 0%, transparent 68%)',
+          }}
+        />
+        {/* Accent cyan — mid right */}
+        <div
+          style={{
+            position: 'absolute', top: '40%', right: '15%',
+            width: '350px', height: '350px', borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(29,180,210,0.05) 0%, transparent 68%)',
           }}
         />
       </div>
 
-      {/* Header */}
+      {/* Header — frosted white glass */}
       <header
-        className="sticky top-0 z-50 backdrop-blur-xl border-b border-slate-800/80 bg-slate-950/80"
+        className="sticky top-0 z-50"
         style={{
-          boxShadow: '0 1px 0 rgba(29,180,210,0.08), 0 4px 24px -4px rgba(0,0,0,0.4)',
+          background: 'rgba(255,255,255,0.82)',
+          backdropFilter: 'blur(20px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+          borderBottom: '1px solid rgba(29,180,210,0.15)',
+          boxShadow: '0 1px 0 rgba(29,180,210,0.08), 0 4px 24px -4px rgba(29,180,210,0.06)',
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
@@ -64,7 +78,7 @@ export function EmployeeLayout({ children }: EmployeeLayoutProps) {
             <div className="relative">
               <div
                 className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                style={{ background: 'rgba(29,180,210,0.3)', filter: 'blur(6px)', transform: 'scale(1.3)' }}
+                style={{ background: 'rgba(29,180,210,0.2)', filter: 'blur(6px)', transform: 'scale(1.3)' }}
               />
               <img
                 src="/logo.png"
@@ -73,22 +87,33 @@ export function EmployeeLayout({ children }: EmployeeLayoutProps) {
               />
             </div>
             <div className="hidden sm:flex flex-col leading-none">
-              <span className="text-sm font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-cyan-400">
+              <span
+                className="text-sm font-bold tracking-tight"
+                style={{
+                  background: 'linear-gradient(135deg, #0B3D6E 0%, #1DB4D2 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
+              >
                 OES
               </span>
-              <span className="text-[10px] font-medium text-slate-400 tracking-wider uppercase">
+              <span className="text-[10px] font-medium text-slate-500 tracking-wider uppercase">
                 Tools Hub
               </span>
             </div>
           </Link>
 
-          {/* NavPill */}
+          {/* Floating pill nav */}
           <NavPill />
 
-          {/* User & SignOut */}
+          {/* User & Avatar */}
           <div className="flex items-center gap-3 shrink-0">
-            <span className="text-sm font-medium text-slate-300 hidden md:inline truncate max-w-[140px]">
-              {profile?.full_name ?? 'Account'}
+            <span
+              className="text-sm font-medium hidden md:inline truncate max-w-[140px]"
+              style={{ color: '#0B3D6E', opacity: 0.7 }}
+            >
+              {profile?.full_name ?? 'Your Account'}
             </span>
 
             <div
@@ -100,13 +125,23 @@ export function EmployeeLayout({ children }: EmployeeLayoutProps) {
             >
               <Avatar className="h-8 w-8 block">
                 <AvatarImage src={profile?.photo_url ?? undefined} alt={profile?.full_name ?? 'User'} />
-                <AvatarFallback className="text-xs font-bold text-white bg-slate-900">
+                <AvatarFallback
+                  className="text-xs font-bold text-white"
+                  style={{ background: '#0B3D6E' }}
+                >
                   {initials}
                 </AvatarFallback>
               </Avatar>
             </div>
 
-            <SignOutButton />
+            <div
+              className="rounded-full p-[1px]"
+              style={{
+                background: 'linear-gradient(135deg, rgba(29,180,210,0.3) 0%, rgba(11,61,110,0.15) 100%)',
+              }}
+            >
+              <SignOutButton />
+            </div>
           </div>
         </div>
       </header>

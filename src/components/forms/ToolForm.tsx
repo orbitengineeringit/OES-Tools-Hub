@@ -91,9 +91,9 @@ function ToolImageField({ toolId, currentImageUrl, onUploaded }: ToolImageFieldP
 
   return (
     <div className="space-y-2">
-      <Label>Tool image</Label>
+      <Label className="text-slate-700 font-semibold text-sm">Tool image</Label>
       <div className="flex items-center gap-4">
-        <div className="h-16 w-16 rounded-lg bg-slate-800 border border-slate-700 overflow-hidden flex items-center justify-center shrink-0">
+        <div className="h-16 w-16 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center shrink-0">
           {previewUrl ? (
             <img
               src={previewUrl}
@@ -101,7 +101,7 @@ function ToolImageField({ toolId, currentImageUrl, onUploaded }: ToolImageFieldP
               className="object-cover h-full w-full"
             />
           ) : (
-            <ImagePlus className="h-6 w-6 text-slate-500" />
+            <ImagePlus className="h-6 w-6 text-slate-400" />
           )}
         </div>
 
@@ -121,7 +121,7 @@ function ToolImageField({ toolId, currentImageUrl, onUploaded }: ToolImageFieldP
             size="sm"
             disabled={isUploading}
             onClick={() => inputRef.current?.click()}
-            className="gap-2 cursor-pointer border-slate-700 text-slate-200 hover:bg-slate-800"
+            className="gap-2 border-slate-300 text-slate-700 hover:bg-slate-50 cursor-pointer"
           >
             {isUploading ? (
               <>
@@ -197,37 +197,37 @@ export function ToolForm({ tool, isSubmitting, onSubmit, onCancel, onImageUpload
       )}
 
       <div className="space-y-1.5">
-        <Label htmlFor="tf-title">Title *</Label>
+        <Label htmlFor="tf-title" className="text-slate-700 font-semibold text-sm">Title *</Label>
         <Input
           id="tf-title"
           placeholder="e.g. ChatGPT Enterprise"
           aria-invalid={!!errors.title}
           {...register('title')}
-          className="bg-slate-950/60 border-slate-800 text-slate-100"
+          className="bg-white border-slate-300 text-slate-900"
         />
         {errors.title && <p className="text-xs text-red-500">{errors.title.message}</p>}
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="tf-url">URL *</Label>
+        <Label htmlFor="tf-url" className="text-slate-700 font-semibold text-sm">URL *</Label>
         <Input
           id="tf-url"
           type="url"
           placeholder="https://..."
           aria-invalid={!!errors.url}
           {...register('url')}
-          className="bg-slate-950/60 border-slate-800 text-slate-100"
+          className="bg-white border-slate-300 text-slate-900"
         />
         {errors.url && <p className="text-xs text-red-500">{errors.url.message}</p>}
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="tf-description">Description</Label>
+        <Label htmlFor="tf-description" className="text-slate-700 font-semibold text-sm">Description</Label>
         <Textarea
           id="tf-description"
           rows={3}
           placeholder="What does this tool do?"
-          className="resize-none bg-slate-950/60 border-slate-800 text-slate-100"
+          className="resize-none bg-white border-slate-300 text-slate-900"
           {...register('description')}
         />
         {errors.description && (
@@ -236,7 +236,7 @@ export function ToolForm({ tool, isSubmitting, onSubmit, onCancel, onImageUpload
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="tf-category">Category</Label>
+        <Label htmlFor="tf-category" className="text-slate-700 font-semibold text-sm">Category</Label>
         <Controller
           name="category"
           control={control}
@@ -245,10 +245,10 @@ export function ToolForm({ tool, isSubmitting, onSubmit, onCancel, onImageUpload
               value={field.value ?? ''}
               onValueChange={(val) => field.onChange(val || undefined)}
             >
-              <SelectTrigger id="tf-category" className="w-full bg-slate-950/60 border-slate-800">
+              <SelectTrigger id="tf-category" className="w-full bg-white border-slate-300 text-slate-900">
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white text-slate-900 border-slate-200">
                 {TOOL_CATEGORIES.map((cat) => (
                   <SelectItem key={cat} value={cat}>
                     {cat}
@@ -261,17 +261,22 @@ export function ToolForm({ tool, isSubmitting, onSubmit, onCancel, onImageUpload
       </div>
 
       {!isEditMode && (
-        <p className="text-xs text-slate-400 bg-slate-950/60 rounded-md px-3 py-2 border border-slate-800">
+        <p className="text-xs text-slate-600 bg-slate-50 rounded-md px-3 py-2 border border-slate-200">
           💡 After creating the tool, click the{' '}
           <ImagePlus className="inline h-3.5 w-3.5 mb-0.5" /> icon in the table row to add an image.
         </p>
       )}
 
       <div className="flex justify-end gap-2 pt-2">
-        <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting} className="border-slate-800 text-slate-300">
+        <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting} className="border-slate-300 text-slate-700">
           Cancel
         </Button>
-        <Button type="submit" disabled={isSubmitting} className="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold cursor-pointer">
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="text-white font-semibold cursor-pointer"
+          style={{ background: 'linear-gradient(135deg, #1DB4D2 0%, #158FAA 100%)' }}
+        >
           {isSubmitting ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

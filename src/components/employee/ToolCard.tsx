@@ -70,6 +70,7 @@ export const ToolCard = memo(function ToolCard({
 
   return (
     <div style={{ borderRadius: '20px', padding: '1px', position: 'relative' }}>
+      {/* Resting border */}
       <div
         aria-hidden="true"
         style={{
@@ -81,6 +82,7 @@ export const ToolCard = memo(function ToolCard({
             'linear-gradient(135deg, rgba(29,180,210,0.3) 0%, rgba(11,61,110,0.15) 100%)',
         }}
       />
+      {/* Hover border */}
       <div
         aria-hidden="true"
         style={{
@@ -126,10 +128,10 @@ export const ToolCard = memo(function ToolCard({
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
-          background: '#0f172a',
+          background: 'white',
           cursor: 'pointer',
           position: 'relative',
-          boxShadow: '0 4px 16px -4px rgba(0,0,0,0.5)',
+          boxShadow: '0 4px 16px -4px rgba(0,0,0,0.07)',
         }}
         className="group block"
       >
@@ -139,7 +141,7 @@ export const ToolCard = memo(function ToolCard({
           style={{
             height: '80px',
             background:
-              'linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0) 100%)',
+              'linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 100%)',
           }}
         />
 
@@ -203,7 +205,7 @@ export const ToolCard = memo(function ToolCard({
             style={{
               height: '90px',
               background:
-                'linear-gradient(to bottom, rgba(15,23,42,0) 0%, rgba(15,23,42,0.85) 65%, rgba(15,23,42,1) 100%)',
+                'linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 65%, rgba(255,255,255,1) 100%)',
             }}
           />
 
@@ -251,11 +253,11 @@ export const ToolCard = memo(function ToolCard({
 
         <div className="flex flex-col flex-1 gap-3 px-4 pb-4 pt-2">
           <div className="space-y-1.5 flex-1 min-w-0">
-            <h2 className="font-bold text-base text-slate-100 leading-snug line-clamp-1">
+            <h2 className="font-bold text-base text-slate-900 leading-snug line-clamp-1">
               {title}
             </h2>
             {description && (
-              <p className="text-sm text-slate-400 leading-relaxed line-clamp-2">
+              <p className="text-sm text-slate-500 leading-relaxed line-clamp-2">
                 {description}
               </p>
             )}

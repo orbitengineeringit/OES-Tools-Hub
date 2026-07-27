@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { Plus, Pencil, Trash2, ExternalLink, ImagePlus } from 'lucide-react'
+import { Plus, Pencil, Trash2, ExternalLink } from 'lucide-react'
 
 import { supabase } from '@/lib/supabase'
 import { type Tool, type ToolCreate } from '@/lib/validation/tool'
@@ -132,22 +132,26 @@ export function AdminToolsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-100">Tools</h1>
-          <p className="text-slate-400 text-sm mt-0.5">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Tools</h1>
+          <p className="text-slate-500 text-sm mt-0.5">
             Manage the tools available to your team.
           </p>
         </div>
-        <Button onClick={() => setCreateOpen(true)} className="gap-2 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold cursor-pointer">
+        <Button
+          onClick={() => setCreateOpen(true)}
+          className="gap-2 text-white font-semibold cursor-pointer shadow-xs"
+          style={{ background: 'linear-gradient(135deg, #1DB4D2 0%, #158FAA 100%)' }}
+        >
           <Plus className="h-4 w-4" />
           Add tool
         </Button>
       </div>
 
-      <div className="bg-slate-900/80 rounded-xl border border-slate-800 overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-xs">
         {isLoading ? (
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="bg-slate-50">
                 <TableHead className="w-12">Image</TableHead>
                 <TableHead>Title</TableHead>
                 <TableHead className="hidden md:table-cell">Category</TableHead>
@@ -159,8 +163,8 @@ export function AdminToolsPage() {
           </Table>
         ) : tools.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-40 gap-2 p-6">
-            <p className="text-slate-400 text-sm">No tools yet.</p>
-            <Button variant="outline" size="sm" onClick={() => setCreateOpen(true)} className="gap-1.5 border-slate-700 text-slate-200">
+            <p className="text-slate-500 text-sm">No tools yet.</p>
+            <Button variant="outline" size="sm" onClick={() => setCreateOpen(true)} className="gap-1.5 border-slate-300">
               <Plus className="h-3.5 w-3.5" />
               Add your first tool
             </Button>
@@ -168,7 +172,7 @@ export function AdminToolsPage() {
         ) : (
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="bg-slate-50">
                 <TableHead className="w-12">Image</TableHead>
                 <TableHead>Title</TableHead>
                 <TableHead className="hidden md:table-cell">Category</TableHead>
@@ -180,7 +184,7 @@ export function AdminToolsPage() {
               {tools.map((tool) => (
                 <TableRow key={tool.id}>
                   <TableCell>
-                    <div className="h-9 w-9 rounded-md bg-slate-800 border border-slate-700 overflow-hidden flex items-center justify-center">
+                    <div className="h-9 w-9 rounded-md bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center">
                       {tool.image_url ? (
                         <img
                           src={tool.image_url}
@@ -188,7 +192,7 @@ export function AdminToolsPage() {
                           className="object-cover h-full w-full"
                         />
                       ) : (
-                        <span className="text-slate-400 text-xs font-semibold">
+                        <span className="text-slate-500 text-xs font-semibold">
                           {tool.title[0]?.toUpperCase()}
                         </span>
                       )}
@@ -196,12 +200,12 @@ export function AdminToolsPage() {
                   </TableCell>
 
                   <TableCell>
-                    <div className="font-semibold text-sm text-slate-100">{tool.title}</div>
+                    <div className="font-semibold text-sm text-slate-900">{tool.title}</div>
                     <a
                       href={tool.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs text-cyan-400 hover:underline flex items-center gap-0.5 mt-0.5 w-fit"
+                      className="text-xs text-[#1DB4D2] hover:underline flex items-center gap-0.5 mt-0.5 w-fit"
                     >
                       {safeHostname(tool.url)}
                       <ExternalLink className="h-3 w-3" />
@@ -210,14 +214,14 @@ export function AdminToolsPage() {
 
                   <TableCell className="hidden md:table-cell">
                     {tool.category ? (
-                      <Badge variant="outline" className="text-slate-300 border-slate-700">{tool.category}</Badge>
+                      <Badge variant="secondary" className="text-slate-700 bg-slate-100 border-slate-200">{tool.category}</Badge>
                     ) : (
-                      <span className="text-xs text-slate-500">—</span>
+                      <span className="text-xs text-slate-400">—</span>
                     )}
                   </TableCell>
 
                   <TableCell className="hidden lg:table-cell">
-                    <Badge variant={tool.is_active ? 'default' : 'secondary'} className={tool.is_active ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/40' : ''}>
+                    <Badge variant={tool.is_active ? 'default' : 'secondary'} className={tool.is_active ? 'bg-[#1DB4D2]/15 text-[#158FAA] border-[#1DB4D2]/30' : ''}>
                       {tool.is_active ? 'Active' : 'Inactive'}
                     </Badge>
                   </TableCell>
@@ -229,7 +233,7 @@ export function AdminToolsPage() {
                         size="icon-sm"
                         onClick={() => setToolToEdit(tool)}
                         title="Edit"
-                        className="text-slate-400 hover:text-slate-100"
+                        className="text-slate-600 hover:text-slate-900"
                       >
                         <Pencil className="h-4 w-4" />
                       </Button>
@@ -238,7 +242,7 @@ export function AdminToolsPage() {
                         size="icon-sm"
                         onClick={() => setToolToDelete(tool)}
                         title="Delete"
-                        className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -252,9 +256,9 @@ export function AdminToolsPage() {
       </div>
 
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-white text-slate-900 border-slate-200">
           <DialogHeader>
-            <DialogTitle>Add tool</DialogTitle>
+            <DialogTitle className="text-slate-900 font-bold">Add tool</DialogTitle>
           </DialogHeader>
           <ToolForm
             isSubmitting={createMutation.isPending}
@@ -265,9 +269,9 @@ export function AdminToolsPage() {
       </Dialog>
 
       <Dialog open={!!toolToEdit} onOpenChange={(open) => !open && setToolToEdit(null)}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-lg bg-white text-slate-900 border-slate-200">
           <DialogHeader>
-            <DialogTitle>Edit tool</DialogTitle>
+            <DialogTitle className="text-slate-900 font-bold">Edit tool</DialogTitle>
           </DialogHeader>
           {toolToEdit && (
             <ToolForm
@@ -282,19 +286,19 @@ export function AdminToolsPage() {
       </Dialog>
 
       <AlertDialog open={!!toolToDelete} onOpenChange={(open) => !open && setToolToDelete(null)}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-white text-slate-900 border-slate-200">
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete &ldquo;{toolToDelete?.title}&rdquo;?</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-slate-900 font-bold">Delete &ldquo;{toolToDelete?.title}&rdquo;?</AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-500">
               This will permanently remove the tool and all employee access grants for it.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setToolToDelete(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setToolToDelete(null)} className="border-slate-300">Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => toolToDelete && deleteMutation.mutate(toolToDelete.id)}
               disabled={deleteMutation.isPending}
-              className="bg-red-600 text-white hover:bg-red-700"
+              className="bg-red-600 text-white hover:bg-red-700 font-semibold"
             >
               Delete
             </AlertDialogAction>

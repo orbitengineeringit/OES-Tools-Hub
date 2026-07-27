@@ -53,14 +53,14 @@ export function NavPill() {
                 <Icon
                   className="h-4 w-4 transition-colors duration-200"
                   style={{
-                    color: isActive ? '#1DB4D2' : '#94a3b8',
+                    color: isActive ? '#1DB4D2' : '#0B3D6E',
                     opacity: isActive ? 1 : 0.6,
                   }}
                 />
                 <span
                   className="hidden sm:inline text-sm transition-colors duration-200"
                   style={{
-                    color: isActive ? '#1DB4D2' : '#94a3b8',
+                    color: isActive ? '#1DB4D2' : '#0B3D6E',
                     opacity: isActive ? 1 : 0.65,
                     fontWeight: isActive ? 700 : 600,
                   }}

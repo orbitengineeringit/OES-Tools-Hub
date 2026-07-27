@@ -1,62 +1,71 @@
-import { useState, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
-import { Loader2, Upload, User } from 'lucide-react'
+import { Loader2, Upload, UserCheck } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { ProfileUpdateSchema, type ProfileUpdate } from '@/lib/validation/profile'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const MAX_BYTES = 5 * 1024 * 1024
 
 export function ProfilePage() {
   const { user, profile, refreshProfile } = useAuth()
-  const [isLoading, setIsLoading] = useState(false)
-  const [isUploading, setIsUploading] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isDirty },
+    reset,
+    formState: { errors },
   } = useForm<ProfileUpdate>({
     resolver: zodResolver(ProfileUpdateSchema),
-    values: {
+    defaultValues: {
       full_name: profile?.full_name ?? '',
       department: profile?.department ?? '',
       designation: profile?.designation ?? '',
-      bio: profile?.bio ?? '',
     },
   })
 
+  useEffect(() => {
+    if (profile) {
+      reset({
+        full_name: profile.full_name ?? '',
+        department: profile.department ?? '',
+        designation: profile.designation ?? '',
+      })
+    }
+  }, [profile, reset])
+
   async function onSubmit(values: ProfileUpdate) {
     if (!user) return
-    setIsLoading(true)
-    const { error } = await supabase
-      .from('profiles')
-      .update({
-        full_name: values.full_name,
-        department: values.department || null,
-        designation: values.designation || null,
-        bio: values.bio || null,
-      })
-      .eq('id', user.id)
+    setIsSubmitting(true)
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          full_name: values.full_name,
+          department: values.department || null,
+          designation: values.designation || null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', user.id)
 
-    setIsLoading(false)
-
-    if (error) {
-      toast.error('Failed to save profile: ' + error.message)
-      return
+      if (error) throw new Error(error.message)
+      toast.success('Profile updated successfully.')
+      await refreshProfile()
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to update profile.'
+      toast.error(message)
+    } finally {
+      setIsSubmitting(false)
     }
-
-    toast.success('Profile saved.')
-    await refreshProfile()
   }
 
   async function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -64,46 +73,45 @@ export function ProfilePage() {
     if (!file || !user) return
 
     if (!ACCEPTED_TYPES.includes(file.type)) {
-      toast.error('Only JPEG, PNG, and WebP images are allowed.')
+      toast.error('Only JPEG, PNG, or WebP images are allowed.')
       return
     }
     if (file.size > MAX_BYTES) {
-      toast.error('File must be 5 MB or smaller.')
+      toast.error('Image must be 5 MB or smaller.')
       return
     }
 
-    setIsUploading(true)
+    setIsUploadingPhoto(true)
     const ext = file.name.split('.').pop()
-    const filePath = `${user.id}/avatar-${Date.now()}.${ext}`
+    const filePath = `profile-${user.id}-${Date.now()}.${ext}`
 
-    const { error: uploadErr } = await supabase.storage
-      .from('profile-photos')
-      .upload(filePath, file, { upsert: true })
+    try {
+      const { error: uploadErr } = await supabase.storage
+        .from('profile-photos')
+        .upload(filePath, file, { upsert: true })
 
-    if (uploadErr) {
-      setIsUploading(false)
-      toast.error('Upload failed: ' + uploadErr.message)
-      return
+      if (uploadErr) throw new Error(uploadErr.message)
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('profile-photos')
+        .getPublicUrl(filePath)
+
+      const { error: updateErr } = await supabase
+        .from('profiles')
+        .update({ photo_url: publicUrl, updated_at: new Date().toISOString() })
+        .eq('id', user.id)
+
+      if (updateErr) throw new Error(updateErr.message)
+
+      toast.success('Profile photo updated.')
+      await refreshProfile()
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to upload photo.'
+      toast.error(message)
+    } finally {
+      setIsUploadingPhoto(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
     }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('profile-photos')
-      .getPublicUrl(filePath)
-
-    const { error: updateErr } = await supabase
-      .from('profiles')
-      .update({ photo_url: publicUrl })
-      .eq('id', user.id)
-
-    setIsUploading(false)
-
-    if (updateErr) {
-      toast.error('Failed to save avatar URL.')
-      return
-    }
-
-    toast.success('Photo updated.')
-    await refreshProfile()
   }
 
   const initials = (profile?.full_name ?? 'User')
@@ -115,135 +123,143 @@ export function ProfilePage() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-100">Profile</h1>
-        <p className="text-sm text-slate-400">Manage your account information and preferences.</p>
+      <div className="space-y-1">
+        <h1
+          className="text-3xl font-extrabold tracking-tight"
+          style={{
+            background: 'linear-gradient(135deg, #0B3D6E 0%, #1DB4D2 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}
+        >
+          My Profile
+        </h1>
+        <p className="text-slate-500 text-sm font-medium">
+          Manage your account information and preferences.
+        </p>
       </div>
 
-      <Card className="bg-slate-900/80 border-slate-800">
-        <CardHeader>
-          <CardTitle>Profile Photo</CardTitle>
-          <CardDescription>Upload a photo for your profile avatar.</CardDescription>
-        </CardHeader>
-        <CardContent className="flex items-center gap-6">
-          <Avatar className="h-20 w-20 border-2 border-cyan-500/40">
-            <AvatarImage src={profile?.photo_url ?? undefined} alt={profile?.full_name ?? 'User'} />
-            <AvatarFallback className="text-xl font-bold bg-slate-800 text-white">
-              {initials}
-            </AvatarFallback>
-          </Avatar>
+      <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6">
+        {/* Photo section */}
+        <div className="flex items-center gap-5 pb-6 border-b border-slate-100">
+          <div
+            className="relative rounded-full p-[2px] shrink-0"
+            style={{
+              background: 'linear-gradient(135deg, #1DB4D2 0%, #0B3D6E 100%)',
+              boxShadow: '0 0 16px rgba(29,180,210,0.25)',
+            }}
+          >
+            <div className="h-20 w-20 rounded-full overflow-hidden bg-slate-100 flex items-center justify-center">
+              {profile?.photo_url ? (
+                <img
+                  src={profile.photo_url}
+                  alt={profile.full_name ?? 'User'}
+                  className="object-cover h-full w-full"
+                />
+              ) : (
+                <span className="text-2xl font-bold text-[#0B3D6E]">
+                  {initials}
+                </span>
+              )}
+            </div>
+          </div>
 
-          <div>
+          <div className="space-y-2">
+            <h3 className="font-bold text-slate-900 text-lg">{profile?.full_name ?? 'User Profile'}</h3>
+            <p className="text-xs text-slate-500">{user?.email}</p>
             <input
               ref={fileInputRef}
               type="file"
               accept="image/jpeg,image/png,image/webp"
               className="hidden"
               onChange={handlePhotoUpload}
+              disabled={isUploadingPhoto}
             />
             <Button
               type="button"
               variant="outline"
               size="sm"
-              disabled={isUploading}
+              disabled={isUploadingPhoto}
               onClick={() => fileInputRef.current?.click()}
-              className="gap-2 cursor-pointer border-slate-700 text-slate-200 hover:bg-slate-800"
+              className="gap-2 border-slate-200 text-slate-700 hover:bg-slate-50 cursor-pointer"
             >
-              {isUploading ? (
+              {isUploadingPhoto ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
                   Uploading…
                 </>
               ) : (
                 <>
-                  <Upload className="h-4 w-4" />
+                  <Upload className="h-3.5 w-3.5" />
                   Change photo
                 </>
               )}
             </Button>
-            <p className="text-xs text-slate-500 mt-2">JPEG, PNG, or WebP up to 5MB.</p>
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
-      <Card className="bg-slate-900/80 border-slate-800">
-        <CardHeader>
-          <CardTitle>Personal Details</CardTitle>
-          <CardDescription>Update your personal and organization information.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
+        {/* Form section */}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="pf-name" className="text-slate-700 font-semibold text-sm">Full Name *</Label>
+            <Input
+              id="pf-name"
+              placeholder="Your full name"
+              {...register('full_name')}
+              className="bg-white border-slate-200 text-slate-900 focus:border-[#1DB4D2]"
+            />
+            {errors.full_name && (
+              <p className="text-xs text-red-500">{errors.full_name.message}</p>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <Label htmlFor="full_name">Full name *</Label>
+              <Label htmlFor="pf-dept" className="text-slate-700 font-semibold text-sm">Department</Label>
               <Input
-                id="full_name"
-                type="text"
-                placeholder="Jane Smith"
-                aria-invalid={!!errors.full_name}
-                {...register('full_name')}
-                className="bg-slate-950/60 border-slate-800 text-slate-100"
+                id="pf-dept"
+                placeholder="e.g. Engineering"
+                {...register('department')}
+                className="bg-white border-slate-200 text-slate-900 focus:border-[#1DB4D2]"
               />
-              {errors.full_name && (
-                <p className="text-xs text-red-500">{errors.full_name.message}</p>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="department">Department</Label>
-                <Input
-                  id="department"
-                  type="text"
-                  placeholder="Engineering"
-                  {...register('department')}
-                  className="bg-slate-950/60 border-slate-800 text-slate-100"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="designation">Designation</Label>
-                <Input
-                  id="designation"
-                  type="text"
-                  placeholder="Senior Engineer"
-                  {...register('designation')}
-                  className="bg-slate-950/60 border-slate-800 text-slate-100"
-                />
-              </div>
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="bio">Bio</Label>
-              <textarea
-                id="bio"
-                rows={3}
-                placeholder="A short bio about yourself"
-                className="w-full rounded-md border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:border-cyan-500 resize-none"
-                {...register('bio')}
+              <Label htmlFor="pf-desig" className="text-slate-700 font-semibold text-sm">Designation</Label>
+              <Input
+                id="pf-desig"
+                placeholder="e.g. Software Engineer"
+                {...register('designation')}
+                className="bg-white border-slate-200 text-slate-900 focus:border-[#1DB4D2]"
               />
-              {errors.bio && (
-                <p className="text-xs text-red-500">{errors.bio.message}</p>
-              )}
             </div>
+          </div>
 
-            <div className="flex justify-end pt-2">
-              <Button
-                type="submit"
-                disabled={isLoading || !isDirty}
-                className="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold cursor-pointer"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Saving…
-                  </>
-                ) : (
-                  'Save changes'
-                )}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+          <div className="flex justify-end pt-4">
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="gap-2 font-semibold text-white cursor-pointer px-6"
+              style={{
+                background: 'linear-gradient(135deg, #1DB4D2 0%, #158FAA 100%)',
+              }}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Saving…
+                </>
+              ) : (
+                <>
+                  <UserCheck className="h-4 w-4" />
+                  Save changes
+                </>
+              )}
+            </Button>
+          </div>
+        </form>
+      </div>
     </div>
   )
 }
